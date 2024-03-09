@@ -107,3 +107,14 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
     filter_suffix = ""
   }
 }
+
+# Setting up of the event source mapping from the queue_for_processing_lambda to the_processing_lambda
+resource "aws_lambda_event_source_mapping" "event_source_mapping_to_processing_lambda" {
+  enabled = true
+  function_name = module.the_processing_lambda.lambda_function_arn
+  event_source_arn = module.queue_for_processing_lambda.main_queue_arn
+  batch_size = 1
+  scaling_config {
+    maximum_concurrency = 10
+  }
+}
