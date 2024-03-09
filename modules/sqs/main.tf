@@ -1,11 +1,11 @@
 # Create main SQS queue
 resource "aws_sqs_queue" "main_queue" {
-  name                      = var.queue_name
-  delay_seconds             = var.delay_seconds
-  max_message_size          = var.max_message_size
+  name = var.queue_name
+  delay_seconds = var.delay_seconds
+  max_message_size = var.max_message_size
   message_retention_seconds = var.message_retention_seconds
   visibility_timeout_seconds = var.visibility_timeout_seconds
-
+  policy = var.sqs_policy_document
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.dead_letter_queue.arn
     maxReceiveCount     = var.max_receive_count
