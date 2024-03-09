@@ -34,3 +34,13 @@ EOF
     "DESTINATION_BUCKET_NAME" = "processed-output-bucket"
   }
 }
+
+module "ingestion_bucket" {
+  source            = "./s3_module"
+  bucket_name       = "mini-pipe-ingestion"
+}
+
+module "processed_output_bucket" {
+  source            = "./s3_module"
+  bucket_name       = "mini-pipe-processed-outputs"
+}
