@@ -4,7 +4,7 @@ module "the_processing_lambda" {
   function_name = var.the_processing_lambda_name
   handler = "lambda_function.lambda_handler"
   runtime = "python3.11"
-  architectures = ["arm64"]
+  architectures = ["x86_64"]
   memory_size = 1024
   timeout = 180
   lambda_function_code_path = "some-path"
@@ -13,6 +13,7 @@ module "the_processing_lambda" {
   "Version": "2012-10-17",
   "Statement": [
     {
+      "Sid": "AllowLogEvents",
       "Effect": "Allow",
       "Action": [
         "logs:CreateLogGroup",
@@ -22,9 +23,25 @@ module "the_processing_lambda" {
       "Resource": "arn:aws:logs:*:*:*"
     },
     {
+      "Sid": "AllowGetObject",
       "Effect": "Allow",
-      "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::example-bucket/*"
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "${module.ingestion_bucket.s3_bucket_arn}",
+        "${module.ingestion_bucket.s3_bucket_arn}/*"
+      ]
+    },
+    {
+      "Sid": "AllowPutObject",
+      "Effect": "Allow",
+      "Action": "s3:PutObject",
+      "Resource": [
+        "${module.processed_output_bucket.s3_bucket_arn}",
+        "${module.processed_output_bucket.s3_bucket_arn}/*"
+      ]
     }
   ]
 }
@@ -81,7 +98,7 @@ EOF
 
 # Setup S3 to send notifications to the queue
 resource "aws_s3_bucket_notification" "bucket_notification" {
-  bucket = module.ingestion_bucket.bucket_id
+  bucket = module.ingestion_bucket.s3_bucket_id
 
   queue {
     queue_arn = module.queue_for_processing_lambda.main_queue_arn
