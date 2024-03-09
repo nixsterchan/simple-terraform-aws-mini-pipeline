@@ -36,11 +36,11 @@ EOF
 }
 
 module "ingestion_bucket" {
-  source            = "./s3_module"
-  bucket_name       = "mini-pipe-ingestion"
+  source = "./modules/s3"
+  bucket_name = "mini-pipe-ingestion"
 }
 
 module "processed_output_bucket" {
-  source            = "./s3_module"
-  bucket_name       = "mini-pipe-processed-outputs"
+  source = "./modules/s3"
+  bucket_name = "mini-pipe-processed-outputs"
 }
