@@ -33,11 +33,6 @@ variable "memory_size" {
   description = "Specifies the amount of memory in MB that the Lambda function will run on"
 }
 
-variable "role_name" {
-  type        = string
-  description = "Name of the IAM role for the Lambda function"
-}
-
 variable "environment_variables" {
   type        = map(string)
   description = "Environment variables for the Lambda function"

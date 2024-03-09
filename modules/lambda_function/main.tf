@@ -1,11 +1,11 @@
 data "archive_file" "lambda_function_zip" {
   type        = "zip"
   source_dir  = var.lambda_function_code_path
-  output_path = "${path.module}/lambda_function.zip"
+  output_path = "${path.module}/${var.function_name}_lambda_function.zip"
 }
 
 resource "aws_iam_role" "lambda_role" {
-  name               = var.role_name
+  name               = "${var.function_name}_lambda_role"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -23,8 +23,8 @@ EOF
 }
 
 resource "aws_iam_policy" "lambda_policy" {
-  name        = "lambda-function-policy"
-  description = "IAM policy for the Lambda function"
+  name        = "${var.function_name}-policy"
+  description = "IAM policy for the ${var.function_name} lambda function"
   policy      = var.lambda_policy_document
 }
 
@@ -32,7 +32,6 @@ resource "aws_iam_role_policy_attachment" "lambda_policy_attachment" {
   role       = aws_iam_role.lambda_role.id
   policy_arn = aws_iam_policy.lambda_policy.arn
 }
-
 
 resource "aws_lambda_function" "lambda_function" {
   filename         = data.archive_file.lambda_function_zip.output_path
